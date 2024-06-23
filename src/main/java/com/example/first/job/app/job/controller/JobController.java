@@ -12,22 +12,23 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/jobs")
 public class JobController {
 
     private final JobService jobService;
 
-    @GetMapping("/jobs")
+    @GetMapping
     public ResponseEntity<List<Job>> findAll() {
        return ResponseEntity.ok(jobService.findAll());
     }
 
-    @PostMapping("/jobs")
+    @PostMapping
     public ResponseEntity<String> createJob(@RequestBody Job job) {
         jobService.createJob(job);
         return new ResponseEntity<>("Job added successfully", HttpStatus.CREATED);
     }
 
-    @GetMapping("/job/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<Job> getJobById(@PathVariable("id") Long id) {
         Job job = jobService.getJobById(id);
         if (job != null) {
@@ -35,11 +36,21 @@ public class JobController {
         } else return ResponseEntity.notFound().build();
     }
 
-    @DeleteMapping("/job/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteJob(@PathVariable("id") Long id) {
         boolean deleted = jobService.deleteJobById(id);
         if(deleted) {
             return new ResponseEntity<>("Job Deleted successfully", HttpStatus.OK);
         } else return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<String> updateJob(@PathVariable("id") Long id,
+                                            @RequestBody Job updatedJob) {
+        boolean updated = jobService.updateJob(id, updatedJob);
+        if (updated) {
+            return new ResponseEntity<>("Job updated successfully", HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 }
